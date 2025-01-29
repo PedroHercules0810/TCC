@@ -50,7 +50,7 @@ let jogadores = [];
 let comunitarias = [];
 //pedindo a quantidade de jogadores
 do {
-    alert("digite um valor entre 1 e 10")
+    alert("Coloque entre 1 e 10 jogadores")
     numero_jogadores = prompt("Digite a quantidade de jogadores");
 } while (numero_jogadores < 1 || numero_jogadores > 10) 
 
