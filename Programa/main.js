@@ -43,7 +43,41 @@ function cartaParaRemover(baralho, cartaRemover) {
     return baralho.filter(carta => carta.valor !== cartaRemover.valor || carta.naipe !== cartaRemover.naipe)
 }
 
+function Pares(jogadores, comunitarias) {
 
+    let contador = 0 ;
+    for (let i = 0; i < jogadores.length; i++) {
+        for (let j = 0; j < comunitarias.length; j++) {
+            if(jogadores[i].carta_1.valor == comunitarias[j].valor && jogadores[i].carta_2.valor == comunitarias[j].valor){
+                contador += 2
+            }
+            if(jogadores[i].carta_1.valor == comunitarias[j].valor || jogadores[i].carta_2.valor == comunitarias[j].valor){
+                contador += 1
+            }  
+        } 
+        switch (contador) {
+            case 1:
+                console.log(`Jogador [${i}] tem 1 par`);
+                break;
+            case 2:
+                console.log(`Jogador [${i}] tem 2 pares`);
+            break;
+
+            case 3:
+                console.log(`Jogador [${i}] tem 1 trinca`);
+            break;
+
+            case 4:
+                console.log(`Jogador [${i}] tem 1 quadra`);
+            break
+            default:
+                console.log("sem jogos");
+                
+                break;
+        }
+        contador = 0;
+    }
+}
 
 let numero_jogadores;
 let jogadores = [];
@@ -86,6 +120,6 @@ console.log(comunitarias);
 
 console.log(jogadores);
 
-
+Pares(jogadores,comunitarias)
 console.log(baralho);
 console.log(baralho.length);
