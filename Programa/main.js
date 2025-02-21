@@ -1,17 +1,16 @@
 function seedToNumber(seed) {
-    let hash = 0;
-    for (let i = 0; i < seed.length; i++) {
-        hash = (hash * 31 + seed.charCodeAt(i)) >>> 0; // Gera um hash numérico
-    }
-    return hash / 0xFFFFFFFF; // Normaliza para [0, 1]
+        let hash = 0;
+        for (let i = 0; i < seed.length; i++) {
+            hash = (hash * 31 + seed.charCodeAt(i)) >>> 0; // Gera um hash numérico
+        }
+        return hash / 0xFFFFFFFF; // Normaliza para [0, 1]
+   
 }
 
 
 let rng = prompt("Digite a seed entre 0 e 1", Math.random());
 
-if (rng != Number) {
-    rng = seedToNumber(rng);
-}
+rng = seedToNumber(rng)
 
 console.log(`Usando a seed: ${rng}`);
 
