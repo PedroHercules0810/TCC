@@ -1,20 +1,5 @@
-function seedToNumber(seed) {
-        let hash = 0;
-        for (let i = 0; i < seed.length; i++) {
-            hash = (hash * 31 + seed.charCodeAt(i)) >>> 0; // Gera um hash numérico
-        }
-        return hash / 0xFFFFFFFF; // Normaliza para [0, 1]
-   
-}
+const fs = require('fs')
 
-
-let rng = prompt("Digite a seed entre 0 e 1", Math.random());
-
-rng = seedToNumber(rng)
-
-console.log(`Usando a seed: ${rng}`);
-
-// Aqui você pode refazer o baralho, distribuir cartas, etc., com base na nova seed
 //classe da carta
 class Carta {
     constructor(naipe, valor) {
@@ -26,13 +11,28 @@ class Carta {
 
 
 }
-//classe do jogador
 class Jogador {
     constructor(c1, c2) {
         this.carta_1 = c1;
         this.carta_2 = c2;
     }
 }
+
+function salvarNoArquivo(texto) {
+    fs.appendFileSync('saida_jogo.txt', texto + '\n', 'utf8');
+}
+function limparArquivo() {
+    fs.writeFileSync('saida_jogo.txt', '', 'utf8'); 
+}
+
+function seedToNumber(seed) {
+    let hash = 0;
+    for (let i = 0; i < seed.toString().length; i++) {
+        hash = (hash * 31 + seed.toString().charCodeAt(i)) & 0x7FFFFFFF; // Mantém número positivo
+    }
+    return (hash % 100000) / 100000; // Garante um valor entre 0 e 1
+}
+
 
 //funcao que cria o baralho
 function criaBaralho() {
@@ -73,20 +73,25 @@ function Pares(jogadores, comunitarias) {
         switch (contador) {
             case 4:
                 console.log(`Jogador [${i}] tem 1 quadra`);
+                salvarNoArquivo(`Jogador [${i}] tem 1 quadra`);
                 break
 
             case 3:
                 console.log(`Jogador [${i}] tem 1 trinca`);
+                salvarNoArquivo(`Jogador [${i}] tem 1 trinca`);
                 break;
             case 2:
                 console.log(`Jogador [${i}] tem 2 pares`);
+                salvarNoArquivo(`Jogador [${i}] tem 2 pares`);
                 break;
             case 1:
                 console.log(`Jogador [${i}] tem 1 par`);
+                salvarNoArquivo(`Jogador [${i}] tem 1 par`);
                 break;
 
             default:
                 console.log("sem jogos");
+                salvarNoArquivo("sem jogos");
                 break;
         }
         contador = 0;
@@ -122,7 +127,10 @@ function Flush(jogadores, comunitarias) {
             }
             if (flag) {
                 console.log(`Jogador [${i}] tem flush`);
+                salvarNoArquivo(`Jogador [${i}] tem flush`);
                 console.log(flush);
+                salvarNoArquivo(flush);
+
             }
 
         }
@@ -149,49 +157,72 @@ function Straight(jogadores, comunitarias) {
     }
 }
 
-let numero_jogadores;
-let jogadores = [];
-let comunitarias = [];
-//pedindo a quantidade de jogadores
-do {
-    alert("Coloque entre 1 e 9 jogadores")
-    numero_jogadores = prompt("Digite a quantidade de jogadores");
-} while (numero_jogadores < 1 || numero_jogadores >= 10)
+function jogo(seed, numero_jogadores) {
 
-//criando o baralho
-let baralho = criaBaralho();
+    let rng = seedToNumber(seed)
+    console.log("Rng: ", rng);
 
-console.log(baralho);
-console.log(baralho.length);
+    console.log(`Usando a seed: ${seed}`);
+    salvarNoArquivo(`Usando a seed: ${seed}`);
 
-//mostrando as cartas comunitarias
-//TODO faer um sistema de sementes
-for (let i = 0; i < 5; i++) {
-    let carta = cartaAleatoria(baralho.length, rng)
-    comunitarias[i] = baralho[carta];
-    baralho = cartaParaRemover(baralho, baralho[carta])
+    let jogadores = [];
+    let comunitarias = [];
+    //pedindo a quantidade de jogadores
+
+
+    //criando o baralho
+    let baralho = criaBaralho();
+
+    // console.log(baralho);
+    console.log(baralho.length);
+
+    //mostrando as cartas comunitarias
+    //TODO faer um sistema de sementes
+    for (let i = 0; i < 5; i++) {
+        let carta = cartaAleatoria(baralho.length, rng)
+        comunitarias[i] = baralho[carta];
+        baralho = cartaParaRemover(baralho, baralho[carta])
+    }
+
+    //dando as cartas dos jogadores
+    for (let j = 0; j < numero_jogadores; j++) {
+        //pegando duas cartas aleatorias
+        jogadores[j] = new Jogador;
+
+        let random_1 = cartaAleatoria(baralho.length, rng)
+        jogadores[j].carta_1 = baralho[random_1]
+        baralho = cartaParaRemover(baralho, baralho[random_1])
+
+
+        //criando o jogador e dando suas cartas
+        let random_2 = cartaAleatoria(baralho.length, rng)
+        jogadores[j].carta_2 = baralho[random_2]
+        baralho = cartaParaRemover(baralho, baralho[random_2])
+    }
+    console.log(comunitarias);
+    salvarNoArquivo(comunitarias);
+
+    console.log(jogadores);
+    salvarNoArquivo(jogadores);
+
+    Pares(jogadores, comunitarias)
+    Flush(jogadores, comunitarias)
+    console.log(baralho);
+    console.log(baralho.length);
 }
 
-//dando as cartas dos jogadores
-for (let j = 0; j < numero_jogadores; j++) {
-    //pegando duas cartas aleatorias
-    jogadores[j] = new Jogador;
+// let seed = prompt("Digite a seed entre 0 e 1", Math.random());
+// let num_jogadores;
+// do {
+//     alert("Coloque entre 1 e 9 jogadores")
+//     num_jogadores = prompt("Digite a quantidade de jogadores");
+// } while (num_jogadores < 1 || num_jogadores >= 10)
 
-    let random_1 = cartaAleatoria(baralho.length, rng)
-    jogadores[j].carta_1 = baralho[random_1]
-    baralho = cartaParaRemover(baralho, baralho[random_1])
-
-
-    //criando o jogador e dando suas cartas
-    let random_2 = cartaAleatoria(baralho.length, rng)
-    jogadores[j].carta_2 = baralho[random_2]
-    baralho = cartaParaRemover(baralho, baralho[random_2])
+for (let i = 0; i < 1000; i++) {
+    salvarNoArquivo(`Jogo ${i} \n`)
+    jogo(Math.random(), 9);
+    salvarNoArquivo(`=====================================================================================`)
 }
-console.log(comunitarias);
 
-console.log(jogadores);
 
-Pares(jogadores, comunitarias)
-Flush(jogadores, comunitarias)
-console.log(baralho);
-console.log(baralho.length);
+
