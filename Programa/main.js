@@ -218,11 +218,26 @@ function jogo(seed, numero_jogadores) {
 //     num_jogadores = prompt("Digite a quantidade de jogadores");
 // } while (num_jogadores < 1 || num_jogadores >= 10)
 
-for (let i = 0; i < 1000; i++) {
-    salvarNoArquivo(`Jogo ${i} \n`)
-    jogo(Math.random(), 9);
-    salvarNoArquivo(`=====================================================================================`)
-}
+const readline = require("readline");
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+rl.question("Deseja limpar o arquivo de saída antes de começar? (s/n): ", (resposta) => {
+    if (resposta.toLowerCase() === "s") {
+      limparArquivo();
+    }
+    rl.close();
+  
+    // Executa os jogos após a resposta do usuário
+    for (let i = 0; i < 10; i++) {
+      salvarNoArquivo(`Jogo ${i} \n`);
+      jogo(Math.random(), 9);
+      salvarNoArquivo(`=====================================================================================`);
+    }
+  });
 
 
 
