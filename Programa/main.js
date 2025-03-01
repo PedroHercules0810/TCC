@@ -91,7 +91,7 @@ function Pares(jogadores, comunitarias) {
 
             default:
                 console.log("sem jogos");
-                salvarNoArquivo("sem jogos");
+                // salvarNoArquivo("sem jogos");
                 break;
         }
         contador = 0;
@@ -112,10 +112,10 @@ function Flush(jogadores, comunitarias) {
                 flush[j] = jogadores[i].carta_1
             }
         }
-
         if (contador_flush == 5) {
             let flag = false
             console.log(flush);
+            salvarNoArquivo(flush);
 
             for (let l = 0; l < flush.length - 1; l++) {
                 if (flush[l].naipe == flush[l + 1].naipe) {
@@ -152,6 +152,7 @@ function Straight(jogadores, comunitarias) {
         }
         if (contador_sequencia == 5) {
             console.log(`Jogador [${i}] tem sequencia`);
+            salvarNoArquivo(`Jogador [${i}] tem sequencia`);
         }
         contador_flush = 0;
     }
@@ -167,7 +168,6 @@ function jogo(seed, numero_jogadores) {
 
     let jogadores = [];
     let comunitarias = [];
-    //pedindo a quantidade de jogadores
 
 
     //criando o baralho
@@ -207,7 +207,9 @@ function jogo(seed, numero_jogadores) {
 
     Pares(jogadores, comunitarias)
     Flush(jogadores, comunitarias)
-    console.log(baralho);
+    Straight(jogadores, comunitarias)
+    console.log(baralho);   
+
     console.log(baralho.length);
 }
 
@@ -232,7 +234,7 @@ rl.question("Deseja limpar o arquivo de saída antes de começar? (s/n): ", (res
     rl.close();
   
     // Executa os jogos após a resposta do usuário
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 10000000; i++) {
       salvarNoArquivo(`Jogo ${i} \n`);
       jogo(Math.random(), 9);
       salvarNoArquivo(`=====================================================================================`);
