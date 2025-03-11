@@ -1,24 +1,23 @@
-import fs from 'fs';
-import * as set from "../Classes/classes.js"
+const fs = require('fs');
+const set = require("../Classes/classes")
 
-export function salvarNoArquivo(texto) {
+function salvarNoArquivo(texto) {
     fs.appendFileSync('saida_jogo.txt', texto + '\n', 'utf8');
 }
-export function limparArquivo() {
+function limparArquivo() {
     fs.writeFileSync('saida_jogo.txt', '', 'utf8');
 }
 
-export function seedToNumber(seed) {
-    seed *= Math.random();
-    let hash = 0;
-    for (let i = 0; i < seed.toString().length; i++) {
-        hash = (hash * 31 + seed.toString().charCodeAt(i)) & 0x7FFFFFFF; // Mantém número positivo
-    }
-    return (hash % 100000) / 100000; // Garante um valor entre 0 e 1
+
+function escreveCarta(valor, naipe) {
+    let valores = [2, 3, 4, 5, 6, 7, 8, 9, 10, "valete", "Dama", "Rei", "Ás"]
+    let naipes = ["Paus", "Copas", "Espadas", "Ouros"]
+
+    return (`${valores[valor]} de ${naipes[naipe]}`)
 }
 
 //funcao que cria o baralho
-export function criaBaralho() {
+function criaBaralho() {
     let baralho = [];
     for (let l = 0; l < 52; l++) {
         let valor = 1 + (l % 13)
@@ -30,16 +29,20 @@ export function criaBaralho() {
 }
 
 //função que pega um valor aleatoria
-export function cartaAleatoria(size, rng) {
+function cartaAleatoria(size, rng) {
     return Math.floor(rng * (size));
 }
 
 //função que remove a carta
-export function cartaParaRemover(baralho, cartaRemover) {
+function cartaParaRemover(baralho, cartaRemover) {
+    if (!cartaRemover) {
+        console.error("Erro: cartaRemover está indefinida!", baralho);
+        return baralho;
+    }
     return baralho.filter(carta => carta.valor !== cartaRemover.valor || carta.naipe !== cartaRemover.naipe)
 }
 
-export function Pares(jogadores, comunitarias) {
+function Pares(jogadores, comunitarias) {
     let contador = 0;
 
     for (let i = 0; i < jogadores.length; i++) {
@@ -57,7 +60,7 @@ export function Pares(jogadores, comunitarias) {
         console.log(contador);
         switch (contador) {
             case 4:
-                
+
                 salvarNoArquivo(`Jogador [${i}] tem 1 quadra`);
                 break;
 
@@ -84,61 +87,41 @@ export function Pares(jogadores, comunitarias) {
 }
 
 
-export function Flush(jogadores, comunitarias) {
-    let contador_flush = 0;
-    let flush = []
+function Flush(jogadores, comunitarias) {
     for (let i = 0; i < jogadores.length; i++) {
-
-
-        
+        let flush = [];
         for (let j = 0; j < comunitarias.length; j++) {
-            if (jogadores[i].carta_2.naipe == comunitarias[j].naipe) {
-                contador_flush = contador_flush + 1;
-                flush[j] = jogadores[i].carta_2
+            if (jogadores[i].carta_2?.naipe === comunitarias[j]?.naipe) {
+                flush.push(jogadores[i].carta_2); // Adiciona ao final do array (sem índice `j`)
             }
-            if (jogadores[i].carta_1.naipe == comunitarias[j].naipe) {
-                contador_flush = contador_flush + 1;
-                flush[j] = jogadores[i].carta_1
+            if (jogadores[i].carta_1?.naipe === comunitarias[j]?.naipe) {
+                flush.push(jogadores[i].carta_1);
             }
         }
 
-        /*
-        if (contador_flush == 4){
-            salvarNoArquivo(`mão 1: ${jogadores[i].carta_1.naipe}`);
-            salvarNoArquivo(`mão 2: ${jogadores[i].carta_2.naipe}`);
+        flush = flush.concat(comunitarias);
 
-            comunitarias.forEach((i, index) => {
-                salvarNoArquivo(`comunitaria ${index}: ${i.naipe}`);
-            });
-        }*/
+        if (flush.length >= 5) {
+            const naipeBase = flush[0]?.naipe;
+            const temFlush = flush.every(carta => carta?.naipe === naipeBase);
 
-        if (contador_flush == 5) {
-            let flag = false
-            console.log(flush);
-
-            for (let l = 0; l < flush.length - 1; l++) {
-                if (flush[l].naipe == flush[l + 1].naipe) {
-                    flag = true
-                    salvarNoArquivo(`Jogador [${i}] tem flush`);
-                } else {
-                    flag = false
-                    break;
-                }
-            }
-            if (flag) {
+            if (temFlush) {
                 console.log(`Jogador [${i}] tem flush`);
                 salvarNoArquivo(`Jogador [${i}] tem flush`);
-                console.log(flush);
-                salvarNoArquivo(flush);
 
+                for (let f = 0; f < flush.length; f++) {
+                    if (flush[f]) {
+                        salvarNoArquivo(`\n ${escreveCarta(flush[f].valor - 1, flush[f].naipe - 1)}, `);
+                    }
+                }
             }
-
         }
-        contador_flush = 0;
     }
 }
 
-export function Straight(jogadores, comunitarias) {
+
+
+function Straight(jogadores, comunitarias) {
     let contador_sequencia = 0;
     for (let i = 0; i < jogadores.length; i++) {
         for (let j = 0; j < comunitarias.length; j++) {
@@ -158,4 +141,4 @@ export function Straight(jogadores, comunitarias) {
     }
 }
 
-module.exports = {Flush, Pares,Straight,cartaAleatoria,cartaParaRemover,criaBaralho,limparArquivo, salvarNoArquivo}
+module.exports = { Flush, Pares, Straight, cartaAleatoria, cartaParaRemover, criaBaralho, limparArquivo, salvarNoArquivo, escreveCarta }
