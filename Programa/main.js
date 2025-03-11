@@ -66,9 +66,9 @@ rl.question("Deseja limpar o arquivo de saída antes de começar? (s/n): ", (res
     rl.close();
   
     // Executa os jogos após a resposta do usuário
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 10000; i++) {
       salvarNoArquivo(`Jogo ${i} \n`);
-      jogo(0.8342737088169092, 9);
+      jogo(Math.random(), 9);
       salvarNoArquivo(`=====================================================================================`);
     }
   });

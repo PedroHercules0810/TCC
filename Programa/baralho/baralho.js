@@ -1,6 +1,10 @@
 const fs = require('fs');
 const set = require("../Classes/classes")
 
+function removerDoisMenores(array) {
+    return array.sort((a, b) => a - b).slice(2);
+}
+
 function salvarNoArquivo(texto) {
     fs.appendFileSync('saida_jogo.txt', texto + '\n', 'utf8');
 }
@@ -117,25 +121,41 @@ function Flush(jogadores, comunitarias) {
 
 
 function Straight(jogadores, comunitarias) {
-    for (let j = 0; j < jogadores.length; j++) {
-       let sequencia = []
-       sequencia.push(jogadores[j].carta_1)
-       sequencia.push(jogadores[j].carta_2)
-   
-       sequencia.concat(comunitarias)
-    
-       sequencia.sort((a,b) => a.valor - b.valor).slice(2);
-    
-       let soma = 0;
-       for (let s = 0; s < sequencia.length; s++) {
-        soma += sequencia[s].valor;
-        salvarNoArquivo(soma)
-       }
-       if (soma % 5 == 0) {
-            salvarNoArquivo(`jogador[${j}] tem sequencia`);
-       }
-    }
 
+    for (let j = 0; j < jogadores.length; j++) {
+        let sequencia = []
+        sequencia.push(jogadores[j].carta_1)
+        sequencia.push(jogadores[j].carta_2)
+
+        sequencia = sequencia.concat(comunitarias)
+
+        sequencia.sort((a, b) => a.valor - b.valor).slice(2);
+
+        let contador = 1;
+        for (let i = 1; i < sequencia.length; i++) {
+            const naipeBase = sequencia[0]?.naipe;
+            const straightFlush = sequencia.every(carta => carta?.naipe === naipeBase);
+            if (straightFlush && sequencia[i].valor === sequencia[i - 1].valor + 1) {
+               contador++;
+               if (contador >= 5) {
+                   console.log(`Jogador [${j}] tem sequência foda!`);
+                   salvarNoArquivo(`Jogador [${j}] tem sequência foda!`);
+                   break;
+               }
+           } 
+            else if (sequencia[i].valor === sequencia[i - 1].valor + 1) {
+                contador++;
+                if (contador >= 5) {
+                    console.log(`Jogador [${j}] tem sequência!`);
+                    salvarNoArquivo(`Jogador [${j}] tem sequência!`);
+                    break;
+                }
+            }
+            else {
+                contador = 1;
+            }
+        }
+    }
 
 }
 
