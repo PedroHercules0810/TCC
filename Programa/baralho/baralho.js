@@ -76,11 +76,6 @@ function Pares(jogadores, comunitarias) {
                 //console.log(`Jogador [${i}] tem 1 par`);
                 salvarNoArquivo(`Jogador [${i}] tem 1 par`);
                 break;
-
-            default:
-                //console.log("sem jogos");
-                // salvarNoArquivo("sem jogos");
-                break;
         }
         contador = 0;
     }
@@ -92,7 +87,7 @@ function Flush(jogadores, comunitarias) {
         let flush = [];
         for (let j = 0; j < comunitarias.length; j++) {
             if (jogadores[i].carta_2?.naipe === comunitarias[j]?.naipe) {
-                flush.push(jogadores[i].carta_2); // Adiciona ao final do array (sem índice `j`)
+                flush.push(jogadores[i].carta_2);
             }
             if (jogadores[i].carta_1?.naipe === comunitarias[j]?.naipe) {
                 flush.push(jogadores[i].carta_1);
@@ -122,23 +117,26 @@ function Flush(jogadores, comunitarias) {
 
 
 function Straight(jogadores, comunitarias) {
-    let contador_sequencia = 0;
-    for (let i = 0; i < jogadores.length; i++) {
-        for (let j = 0; j < comunitarias.length; j++) {
-            let carta_anterior1 = jogadores[i].carta_1
-            let carta_anterior2 = jogadores[i].carta_2
-            if (comunitarias[j].valor == carta_anterior1.valor + 1) {
-                contador_sequencia++;
-                carta_anterior1 = comunitarias[j];
-            }
-
-        }
-        if (contador_sequencia == 5) {
-            console.log(`Jogador [${i}] tem sequencia`);
-            salvarNoArquivo(`Jogador [${i}] tem sequencia`);
-        }
-        contador_sequencia = 0;
+    for (let j = 0; j < jogadores.length; j++) {
+       let sequencia = []
+       sequencia.push(jogadores[j].carta_1)
+       sequencia.push(jogadores[j].carta_2)
+   
+       sequencia.concat(comunitarias)
+    
+       sequencia.sort((a,b) => a.valor - b.valor).slice(2);
+    
+       let soma = 0;
+       for (let s = 0; s < sequencia.length; s++) {
+        soma += sequencia[s].valor;
+        salvarNoArquivo(soma)
+       }
+       if (soma % 5 == 0) {
+            salvarNoArquivo(`jogador[${j}] tem sequencia`);
+       }
     }
+
+
 }
 
 module.exports = { Flush, Pares, Straight, cartaAleatoria, cartaParaRemover, criaBaralho, limparArquivo, salvarNoArquivo, escreveCarta }
