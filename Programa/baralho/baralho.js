@@ -86,6 +86,7 @@ function Pares(jogadores, comunitarias) {
 }
 
 
+//TODO Verificar o funcionamento desta função.
 function Flush(jogadores, comunitarias) {
     for (let i = 0; i < jogadores.length; i++) {
         let flush = [];
@@ -99,6 +100,7 @@ function Flush(jogadores, comunitarias) {
         }
 
         flush = flush.concat(comunitarias);
+        // flush.sort((a, b) => a.valor - b.valor).slice(2)
 
         if (flush.length >= 5) {
             const naipeBase = flush[0]?.naipe;
