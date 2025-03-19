@@ -1,5 +1,6 @@
 const fs = require('fs');
-const set = require("../Classes/classes")
+const set = require("../Classes/classes");
+const { log } = require('console');
 
 function removerDoisMenores(array) {
     return array.sort((a, b) => a - b).slice(2);
@@ -86,66 +87,74 @@ function Pares(jogadores, comunitarias) {
 }
 
 
-//TODO Verificar o funcionamento desta função.
-function Flush(jogadores, comunitarias) {
-    for (let i = 0; i < jogadores.length; i++) {
+
+
+
+
+function StraightFlush(jogadores, comunitarias) {
+    for (let j = 0; j < jogadores.length; j++) {
         let flush = [];
-        for (let j = 0; j < comunitarias.length; j++) {
-            if (jogadores[i].carta_2?.naipe === comunitarias[j]?.naipe) {
-                flush.push(jogadores[i].carta_2);
-            }
-            if (jogadores[i].carta_1?.naipe === comunitarias[j]?.naipe) {
-                flush.push(jogadores[i].carta_1);
-            }
-        }
 
-        flush = flush.concat(comunitarias);
-        // flush.sort((a, b) => a.valor - b.valor).slice(2)
+        const filtrarRepetidos = arr => {
+            const contagem = arr.reduce((acc, carta) => {
+                acc[carta.naipe] = (acc[carta.naipe] || 0) + 1;
+                return acc;
+            }, {});
 
+            return arr.filter(carta => contagem[carta.naipe] > 3);
+        };
+
+
+        flush = comunitarias.map(carta => carta);
+
+       flush.push(jogadores[j].carta_1, jogadores[j].carta_2);
+
+ 
+        flush = filtrarRepetidos(flush);
+
+        let temFlush = false;
         if (flush.length >= 5) {
-            const naipeBase = flush[0]?.naipe;
-            const temFlush = flush.every(carta => carta?.naipe === naipeBase);
+            const naipeBase = flush[0].naipe;
+            temFlush = flush.every(carta => carta.naipe === naipeBase);
+
+            console.log(flush); 
 
             if (temFlush) {
-                console.log(`Jogador [${i}] tem flush`);
-                salvarNoArquivo(`Jogador [${i}] tem flush`);
-
-                for (let f = 0; f < flush.length; f++) {
-                    if (flush[f]) {
-                        salvarNoArquivo(`\n ${escreveCarta(flush[f].valor - 1, flush[f].naipe - 1)}, `);
-                    }
-                }
+                console.log(`Jogador [${j}] tem flush!`);
+                salvarNoArquivo(`Jogador [${j}] tem flush!`);
             }
         }
-    }
-}
-
-
-
-function Straight(jogadores, comunitarias) {
-
-    for (let j = 0; j < jogadores.length; j++) {
+        //==============================================/=================================================================
         let sequencia = []
         sequencia.push(jogadores[j].carta_1)
         sequencia.push(jogadores[j].carta_2)
-
+        
         sequencia = sequencia.concat(comunitarias)
-
+        
         sequencia.sort((a, b) => a.valor - b.valor).slice(2);
+        flush.sort((a, b) => a.valor - b.valor).slice(2);
+
+
+        let contadorSF = 1;
+        for (let i = 1; i < flush.length; i++) {
+
+             if (flush[i].valor === flush[i - 1].valor + 1) {
+                contadorSF++;
+                if (contadorSF >= 5) {
+                    console.log(`Jogador [${j}] tem sequência do mesmo Naipe!`);
+                    salvarNoArquivo(`Jogador [${j}] tem sequência do mesmo Naipe!`);
+                    break;
+                }
+            }
+            else {
+                contadorSF = 1;
+            }
+        }
 
         let contador = 1;
         for (let i = 1; i < sequencia.length; i++) {
-            const naipeBase = sequencia[0]?.naipe;
-            const straightFlush = sequencia.every(carta => carta?.naipe === naipeBase);
-            if (straightFlush && sequencia[i].valor === sequencia[i - 1].valor + 1) {
-               contador++;
-               if (contador >= 5) {
-                   console.log(`Jogador [${j}] tem sequência foda!`);
-                   salvarNoArquivo(`Jogador [${j}] tem sequência foda!`);
-                   break;
-               }
-           } 
-            else if (sequencia[i].valor === sequencia[i - 1].valor + 1) {
+
+             if (sequencia[i].valor === sequencia[i - 1].valor + 1) {
                 contador++;
                 if (contador >= 5) {
                     console.log(`Jogador [${j}] tem sequência!`);
@@ -161,4 +170,4 @@ function Straight(jogadores, comunitarias) {
 
 }
 
-module.exports = { Flush, Pares, Straight, cartaAleatoria, cartaParaRemover, criaBaralho, limparArquivo, salvarNoArquivo, escreveCarta }
+module.exports = { Pares, StraightFlush, cartaAleatoria, cartaParaRemover, criaBaralho, limparArquivo, salvarNoArquivo, escreveCarta }
