@@ -1,6 +1,7 @@
 const fs = require('fs');
 const set = require("../Classes/classes");
 const { log } = require('console');
+const { loadavg } = require('os');
 
 function removerDoisMenores(array) {
     return array.sort((a, b) => a - b).slice(2);
@@ -107,9 +108,9 @@ function StraightFlush(jogadores, comunitarias) {
 
         flush = comunitarias.map(carta => carta);
 
-       flush.push(jogadores[j].carta_1, jogadores[j].carta_2);
+        flush.push(jogadores[j].carta_1, jogadores[j].carta_2);
 
- 
+
         flush = filtrarRepetidos(flush);
 
         let temFlush = false;
@@ -117,8 +118,7 @@ function StraightFlush(jogadores, comunitarias) {
             const naipeBase = flush[0].naipe;
             temFlush = flush.every(carta => carta.naipe === naipeBase);
 
-            console.log(flush); 
-
+            
             if (temFlush) {
                 console.log(`Jogador [${j}] tem flush!`);
                 salvarNoArquivo(`Jogador [${j}] tem flush!`);
@@ -133,12 +133,18 @@ function StraightFlush(jogadores, comunitarias) {
         
         sequencia.sort((a, b) => a.valor - b.valor).slice(2);
         flush.sort((a, b) => a.valor - b.valor).slice(2);
-
+        
+        if (flush.length >= 5) {
+            if (flush[0].valor == 9 && flush[1].valor == 10 && flush[2].valor == 11 && flush[3].valor == 12 && flush[4].valor == 13) {
+                salvarNoArquivo(`Jogador [${j}] Tem umm Royal Straight Flush!!!!!`);
+                break;
+            }
+        }
 
         let contadorSF = 1;
         for (let i = 1; i < flush.length; i++) {
 
-             if (flush[i].valor === flush[i - 1].valor + 1) {
+            if (flush[i].valor === flush[i - 1].valor + 1) {
                 contadorSF++;
                 if (contadorSF >= 5) {
                     console.log(`Jogador [${j}] tem sequência do mesmo Naipe!`);
@@ -154,7 +160,7 @@ function StraightFlush(jogadores, comunitarias) {
         let contador = 1;
         for (let i = 1; i < sequencia.length; i++) {
 
-             if (sequencia[i].valor === sequencia[i - 1].valor + 1) {
+            if (sequencia[i].valor === sequencia[i - 1].valor + 1) {
                 contador++;
                 if (contador >= 5) {
                     console.log(`Jogador [${j}] tem sequência!`);
