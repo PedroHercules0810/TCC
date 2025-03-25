@@ -1,6 +1,6 @@
 const readline = require('node:readline');
 const { stdin: input, stdout: output } = require('node:process');
-const {Flush, Pares,StraightFlush,cartaAleatoria,cartaParaRemover,criaBaralho,limparArquivo, salvarNoArquivo, escreveCarta}= require("./baralho/baralho.js");
+const {fullHouse, Pares,StraightFlush,cartaAleatoria,cartaParaRemover,criaBaralho,limparArquivo, salvarNoArquivo, escreveCarta}= require("./baralho/baralho.js");
 const {Jogador, Carta} = require("./Classes/classes.js")
 
 
@@ -53,7 +53,7 @@ function jogo(seed, numero_jogadores) {
 
     Pares(jogadores, comunitarias)
     StraightFlush(jogadores, comunitarias)
-
+    fullHouse(jogadores, comunitarias)
 }
 
 const rl = readline.createInterface({ input, output });
