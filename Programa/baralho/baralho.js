@@ -96,6 +96,7 @@ function Pares(jogadores, comunitarias) {
         let par = [];
         let trinca = [];
         let quadra = [];
+        let doisPares = 0;
 
         pares.push(jogadores[j].carta_1);
         pares.push(jogadores[j].carta_2);
@@ -118,9 +119,12 @@ function Pares(jogadores, comunitarias) {
             } else if (quantidade >= 3 && trinca.length === 0) {
 
                 trinca = pares.filter(carta => carta.valor === valor).slice(0, 3);
-            } else if (quantidade >= 2 && par.length === 0) {
-
-                par = pares.filter(carta => carta.valor === valor).slice(0, 2);
+            } else if (quantidade >= 2) {
+                if ( par.length === 0) {
+                    par = pares.filter(carta => carta.valor === valor).slice(0, 2);
+                }else{
+                    doisPares++;
+                }
             }
         });
 
@@ -128,8 +132,11 @@ function Pares(jogadores, comunitarias) {
             salvarNoArquivo(`Jogador[${j}] tem uma Quadra!`);
         } else if (trinca.length === 3) {
             salvarNoArquivo(`Jogador[${j}] tem uma Trinca!`);
-        } else if (par.length === 2) {
-            salvarNoArquivo(`Jogador[${j}] tem 1 Par!`);
+        } else if (doisPares >=1) {
+            salvarNoArquivo(`Jogador[${j}] tem dois Pares!`);
+        }
+        else if (par.length === 2) {
+            salvarNoArquivo(`Jogador[${j}] tem um Par!`);
         }
     }
 }
