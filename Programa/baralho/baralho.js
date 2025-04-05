@@ -114,7 +114,7 @@ function Pares(jogadores, comunitarias) {
         valores.forEach(valor => {
             let quantidade = contagem[valor];
             if (quantidade >= 4 && quadra.length === 0) {
-                quadra = pares.filter(carta => carta.valor === valor).slice(0, 3)
+                quadra = pares.filter(carta => carta.valor === valor).slice(0, 4)
             } else if (quantidade >= 3 && trinca.length === 0) {
 
                 trinca = pares.filter(carta => carta.valor === valor).slice(0, 3);
@@ -129,7 +129,7 @@ function Pares(jogadores, comunitarias) {
         } else if (trinca.length === 3) {
             salvarNoArquivo(`Jogador[${j}] tem uma Trinca!`);
         } else if (par.length === 2) {
-            salvarNoArquivo(`Jogador[${j}] tem um Par!`);
+            salvarNoArquivo(`Jogador[${j}] tem 1 Par!`);
         }
     }
 }
